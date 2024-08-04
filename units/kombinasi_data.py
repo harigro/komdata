@@ -1,61 +1,71 @@
 import itertools
-import string
 from enum import Enum
+from typing import Dict, List
 
+def saring_nilai(bb: List[bool], nilai_benar: bool) -> List[bool]:
+    """
+    Deskripsi:
+        - Membentuk daftar baru berupa nilai-nilai benar atau salah dari sebuah daftar
+    """
+    if nilai_benar:
+        return list(filter(lambda x: x, bb))
+    else:
+        return list(itertools.filterfalse(lambda x: x, bb))
 
-def kombinasi_enum(kategori):
-    # Mengambil kombinasi 1 - n dari enum
+def ambil_perbedaan_daftar(data1: List[str], data2: List[str]) -> List[str]:
+    """
+    Deskripsi:
+        - Membentuk elemen-elemen baru dari data2 yang tidak ada di data1
+    """
+    set1 = set(data1)
+    set2 = set(data2)
+    result_set = set2.difference(set1)
+    return sorted(list(result_set))
+
+def kombinasi_enum(kategori: Enum) -> Dict[str, str]:
+    """
+    Deskripsi:
+        - Membentuk kamus baru yang berisi  kombinasi yang mungkin berdasarkan panjang data kelas Enum
+    """
     combinations = itertools.chain.from_iterable(
         itertools.combinations(kategori, r)
         for r in range(1, len(kategori) + 1))
-    # Membuat dict untuk menyimpan hasil kombinasi
-    data_dict = {}
-    # Iterasi untuk setiap kombinasi
+    data_kamus = {}
     for combination in combinations:
-        # Menggabungkan elemen dari setiap Enum kombinasi menjadi satu string
         combined_string = ''.join(category.value for category in combination)
-        # Membuat nama kunci sesuai dengan kombinasi
         key_name = '_'.join(category.name for category in combination)
-        # Menyimpan hasil dalam dict
-        data_dict[key_name] = combined_string
-    return data_dict
+        data_kamus[key_name] = combined_string
+    return data_kamus
 
-def kombinasi_dict(kategori):
-    # Mengambil kombinasi 1 - n dari kamus
+def kombinasi_kamus(kategori: Dict[str, str]) -> Dict[str, str]:
+    """
+    Deskripsi:
+        - Membentuk kamus baru yang berisi kombinasi yang mungkin berdasarkan panjang data kamus
+    """
     combinations = itertools.chain.from_iterable(
         itertools.combinations(kategori.keys(), r)
         for r in range(1, len(kategori) + 1))
-    # Membuat dict untuk menyimpan hasil kombinasi
-    data_dict = {}
-    # Iterasi untuk setiap kombinasi
+    data_kamus = {}
     for combination in combinations:
-        # Menggabungkan elemen dari setiap tuple kombinasi menjadi satu string
         combined_string = ''.join(kategori[key] for key in combination)
-        # Membuat nama kunci sesuai dengan kombinasi
         key_name = '_'.join(combination).upper()
-        # Menyimpan hasil dalam dict
-        data_dict[key_name] = combined_string
-    return data_dict
+        data_kamus[key_name] = combined_string
+    return data_kamus
 
-if __name__ == "__main__":
-    import pprint
-    # Define Enum for character categories
-    class CharCategories(Enum):
-        UPPERCASE = string.ascii_uppercase
-        LOWERCASE = string.ascii_lowercase
-        DIGITS = string.digits
-        PUNCTUATION = string.punctuation
-        
-    # Data yang akan dikombinasikan
-    data = {
-        'uppercase': string.ascii_uppercase,
-        'lowercase': string.ascii_lowercase,
-        'digits': string.digits,
-        'punctuation': string.punctuation}
-        
-    kk = kombinasi_enum(CharCategories)
-    gg = kombinasi_dict(data)
-    pp = pprint.PrettyPrinter(sort_dicts=False)
-    pp.pprint(kk)
-    print()
-    pp.pprint(gg)
+def kombinasi_kamus_indeks(kategori: Dict[str, str]) -> Dict[str, list]:
+    """
+    Deskripsi:
+        - Membentuk kamus baru yang berisi kombinasi kunci dan nilai yang mungkin beserta informasi indeks.
+    """
+    keys = list(kategori.keys())
+    n = len(keys)
+    data_kamus = {}
+    for r in range(1, n + 1):
+        combinations = itertools.combinations(keys, r)
+        for combination in combinations:
+            indices = [keys.index(key) for key in combination]
+            false_indices = [i for i in range(n) if i not in indices]
+            combined_string = ''.join(kategori[key] for key in combination)
+            key_name = '_'.join(combination).upper()
+            data_kamus[key_name] = [combined_string, indices, false_indices]
+    return data_kamus
